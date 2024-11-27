@@ -1,0 +1,22 @@
+import numpy as np
+import pandas as pd
+
+# Function to generate random data (e.g., threat scores)
+def generate_random_data(mean, variance, num_samples):
+    return np.random.randint(max(mean - variance, 0), min(mean + variance + 1, 90), num_samples)
+
+# Example to generate random threat scores for multiple departments
+departments = ['Finance', 'HR', 'IT', 'Sales', 'Marketing']
+data = []
+
+# Generate random data for each department (you can change the parameters as needed)
+for department in departments:
+    scores = generate_random_data(mean=50, variance=10, num_samples=100)  # You can adjust parameters
+    for score in scores:
+        data.append({'Department': department, 'Threat_Score': score})
+
+# Save the generated data to a CSV file
+df = pd.DataFrame(data)
+df.to_csv('threat_scores.csv', index=False)
+
+print("Random data saved to threat_scores.csv.")
