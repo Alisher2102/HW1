@@ -1,0 +1,17 @@
+# Query to fetch all documents from the Elasticsearch index
+query = {
+    "query": {
+        "match_all": {}
+    }
+}
+
+# Fetch data from Elasticsearch
+response = es.search(index=index_name, body=query, size=1000)  # Adjust size as needed
+
+# Extract the data from the response
+hits = response['hits']['hits']
+threat_scores = [hit['_source']['Threat_Score'] for hit in hits]
+
+# Calculate the average threat score
+average_threat_score = np.mean(threat_scores)
+print(f"Average Threat Score: {average_threat_score}")
