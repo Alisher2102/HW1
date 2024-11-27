@@ -1,0 +1,41 @@
+from elasticsearch import Elasticsearch, helpers
+import pandas as pd
+
+# Initialize Elasticsearch client
+es = Elasticsearch("http://localhost:9200")  # Change to your Elasticsearch instance URL
+
+# Define index name and mappings
+index_name = 'threat_scores_index'
+mappings = {
+    "mappings": {
+        "properties": {
+            "Department": {"type": "keyword"},
+            "Threat_Score": {"type": "integer"}
+        }
+    }
+}
+
+# Create Elasticsearch index if it doesn't exist
+if not es.indices.exists(index=index_name):
+    es.indices.create(index=index_name, body=mappings)
+
+# Read the data from the CSV file
+df = pd.read_csv('threat_scores.csv')
+
+# Prepare the data for bulk insert into Elasticsearch
+actions = []
+for _, row in df.iterrows():
+    action = {
+        "_op_type": "index",  # Use "index" to add or update documents
+        "_index": index_name,
+        "_source": {
+            "Department": row['Department'],
+            "Threat_Score": row['Threat_Score']
+        }
+    }
+    actions.append(action)
+
+# Use the bulk helper function to insert the data into Elasticsearch
+helpers.bulk(es, actions)
+
+print("Data populated into Elasticsearch.")
